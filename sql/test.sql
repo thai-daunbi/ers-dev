@@ -50,3 +50,26 @@ INSERT INTO `users` (`id`, `username`, `email`) VALUES
 (2, 'Gower', 'adgower@gmail.com');
 
 
+
+CREATE TABLE employee (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    department_id INT,
+    gender VARCHAR(10),
+    age INT,
+    email VARCHAR(255),
+    postal_code VARCHAR(10),
+    todofuken_id INT,
+    other_address TEXT,
+    FOREIGN KEY (department_id) REFERENCES department(id),
+    FOREIGN KEY (todofuken_id) REFERENCES todofuken(id)
+);
+CREATE TABLE todofuken (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    todofuken_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE department (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    department_name VARCHAR(255) NOT NULL
+);
