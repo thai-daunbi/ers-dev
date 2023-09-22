@@ -59,7 +59,7 @@ class Pager extends db
 
 	function doQuery()
 	{
-		$sql = "SELECT * FROM department WHERE 1";
+		$sql = trim($this->sql);
 		//rows
 		$result = $this->mysqli->query($sql);
 		$this->rows = mysqli_num_rows($result);

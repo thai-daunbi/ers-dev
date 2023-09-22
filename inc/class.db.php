@@ -7,7 +7,7 @@ class db extends PDO
 	private $errorCallbackFunction;
 	private $errorMsgFormat;
 
-	public function __construct($dsn, $user="", $passwd="") 
+	public function __construct($dsn, $user="root", $passwd="") 
 	{
 		$options = array(
 			PDO::ATTR_PERSISTENT => true, 
