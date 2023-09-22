@@ -182,7 +182,7 @@ class db extends PDO
 	public function pager($param)
 	{
 		//echo "<pre>"; print_r($param); echo "</pre>"; exit;
-		$limit = " LIMIT ".$param->start.", ".$param->length;
+		$limit = " LIMIT ".$param->start.", ".$param->length=10;
 		$sql = $param->query.$limit;
 
 		return $this->run($sql);
