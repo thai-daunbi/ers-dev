@@ -12,15 +12,15 @@ html_header($title);
 
 #- 検索結果 -------
 $bind = array(":search" => "a%");
-$set->search = $db->select('list', 'name LIKE :search', $bind);
+$set->search = $db->select('employee', 'name LIKE :search', $bind);
 
 #- Pager example of use -------
-$sql = "SELECT * FROM list WHERE 1 ORDER BY id DESC";
+$sql = "SELECT * FROM employee WHERE 1 ORDER BY id DESC";
 $pager = new Pager($mysqli, $sql, PAGER_LIMIT);
 //debug($pager);
 
 # list 取得
-$set->list = $db->pager($pager);
+$set->employee = $db->pager($pager);
 
 # paging
 $set->pager = $pager->show();
@@ -35,7 +35,7 @@ $fields = array(
 $fields = array(
 	'name' => 'update name',
 );
-$db->update('list', $fields, 'id = 9');
+$db->update('employee', $fields, 'id = 9');
 
 
 #- View =============================================================
