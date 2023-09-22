@@ -74,61 +74,68 @@ function error($value, $msg=null)
 	return true;
 }
 
-try {
-    $conn = new PDO("mysql:host=".HOSTNAME.";dbname=".DATABASE, USERNAME, PASSWORD);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$flagFile = __DIR__ . '/data_added_flag.txt';
 
-    for ($i = 0; $i < 100; $i++) {
-        $departmentName = "Department " . ($i + 1);
+if (!file_exists($flagFile)) {
+    try {
+		$conn = new PDO("mysql:host=".HOSTNAME.";dbname=".DATABASE, USERNAME, PASSWORD);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sql = "INSERT INTO department (department_name) VALUES (:departmentName)";
+		for ($i = 0; $i < 100; $i++) {
+			$departmentName = "Department " . ($i + 1);
+
+			$sql = "INSERT INTO department (department_name) VALUES (:departmentName)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':departmentName', $departmentName);
+			$stmt->execute();
+		}
+
+		for ($i = 0; $i < 100; $i++) {
+			$todofukenName = "Todofuken " . ($i + 1);
+
+			$sql = "INSERT INTO todofuken (todofuken_name) VALUES (:todofukenName)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':todofukenName', $todofukenName);
+			$stmt->execute();
+		}
+
+		for ($i = 0; $i < 100; $i++) {
+			$name = "User " . ($i + 1);
+			$departmentId = rand(1, 10); 
+			$gender = ($i % 2 == 0) ? "Male" : "Female";
+			$age = rand(20, 60); 
+			$email = "user" . ($i + 1) . "@example.com";
+			$zipcode = sprintf("%05d", rand(10000, 99999));
+			$todofukenId = rand(1, 5); 
+			$address = "Address " . ($i + 1);
+
+			$sql = "INSERT INTO employee (name, department_id, gender, age, email, postal_code, todofuken_id, other_address) 
+					VALUES (:name, :departmentId, :gender, :age, :email, :zipcode, :todofukenId, :address)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':name', $name);
+			$stmt->bindParam(':departmentId', $departmentId);
+			$stmt->bindParam(':gender', $gender);
+			$stmt->bindParam(':age', $age);
+			$stmt->bindParam(':email', $email);
+			$stmt->bindParam(':zipcode', $zipcode);
+			$stmt->bindParam(':todofukenId', $todofukenId);
+			$stmt->bindParam(':address', $address);
+			
+			$stmt->execute();
+		}
+
+        file_put_contents($flagFile, 'Data added');
         
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':departmentName', $departmentName);
-        $stmt->execute();
+        echo "100 records have been successfully added to department, todofuken, and employee tables.";
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
-
-    for ($i = 0; $i < 100; $i++) {
-        $todofukenName = "Todofuken " . ($i + 1);
-
-        $sql = "INSERT INTO todofuken (todofuken_name) VALUES (:todofukenName)";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':todofukenName', $todofukenName);
-        $stmt->execute();
-    }
-
-    for ($i = 0; $i < 100; $i++) {
-        $name = "User " . ($i + 1);
-        $departmentId = rand(1, 10); 
-        $gender = ($i % 2 == 0) ? "Male" : "Female";
-        $age = rand(20, 60); 
-        $email = "user" . ($i + 1) . "@example.com";
-        $zipcode = sprintf("%05d", rand(10000, 99999));
-        $todofukenId = rand(1, 5); 
-        $address = "Address " . ($i + 1);
-
-        $sql = "INSERT INTO employee (name, department_id, gender, age, email, postal_code, todofuken_id, other_address) 
-                VALUES (:name, :departmentId, :gender, :age, :email, :zipcode, :todofukenId, :address)";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':departmentId', $departmentId);
-        $stmt->bindParam(':gender', $gender);
-        $stmt->bindParam(':age', $age);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':zipcode', $zipcode);
-        $stmt->bindParam(':todofukenId', $todofukenId);
-        $stmt->bindParam(':address', $address);
-        
-        $stmt->execute();
-    }
-
-    echo "100 records have been successfully added to department, todofuken, and employee tables.";
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+} else {
+    echo "Data has already been added.";
 }
-
 
 
 $conn = null;
