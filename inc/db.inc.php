@@ -75,18 +75,19 @@ function error($value, $msg=null)
 }
 
 $flagFile = __DIR__ . '/data_added_flag.txt';
+$fp = fopen('../sql/13TOKYO.CSV', 'r');
 
 if (!file_exists($flagFile)) {
     try {
-		$conn = new PDO("mysql:host=".HOSTNAME.";dbname=".DATABASE, USERNAME, PASSWORD);
-		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$db = new PDO("mysql:host=".HOSTNAME.";dbname=".DATABASE, USERNAME, PASSWORD);
+		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		for ($i = 0; $i < 100; $i++) {
 			$departmentName = "Department " . ($i + 1);
 
 			$sql = "INSERT INTO department (department_name) VALUES (:departmentName)";
 			
-			$stmt = $conn->prepare($sql);
+			$stmt = $db->prepare($sql);
 			$stmt->bindParam(':departmentName', $departmentName);
 			$stmt->execute();
 		}
@@ -96,7 +97,7 @@ if (!file_exists($flagFile)) {
 
 			$sql = "INSERT INTO todofuken (todofuken_name) VALUES (:todofukenName)";
 			
-			$stmt = $conn->prepare($sql);
+			$stmt = $db->prepare($sql);
 			$stmt->bindParam(':todofukenName', $todofukenName);
 			$stmt->execute();
 		}
@@ -114,7 +115,7 @@ if (!file_exists($flagFile)) {
 			$sql = "INSERT INTO employee (name, department_id, gender, age, email, postal_code, todofuken_id, other_address) 
 					VALUES (:name, :departmentId, :gender, :age, :email, :zipcode, :todofukenId, :address)";
 			
-			$stmt = $conn->prepare($sql);
+			$stmt = $db->prepare($sql);
 			$stmt->bindParam(':name', $name);
 			$stmt->bindParam(':departmentId', $departmentId);
 			$stmt->bindParam(':gender', $gender);
@@ -138,5 +139,5 @@ if (!file_exists($flagFile)) {
 }
 
 
-$conn = null;
+$db = null;
 ?>

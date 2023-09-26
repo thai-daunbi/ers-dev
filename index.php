@@ -10,6 +10,14 @@ html_header($title);
 
 #- Controller =======================================================
 
+
+<form method="post" action="search.php">
+	<label for="search">search:</label>
+	<input type="text" id="search" name="search">
+	<input type="submit" value="search">
+</form>
+
+
 #- 検索結果 -------
 $bind = array(":search" => "a%");
 $set->search = $db->select('employee', 'name LIKE :search', $bind);
