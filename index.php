@@ -10,12 +10,25 @@ html_header($title);
 
 #- Controller =======================================================
 
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+echo '<form method="get" action="index.php" style="margin-bottom: 20px;">';
+echo '  <label for="search">search:</label>';
+echo '  <input type="text" id="search" name="search" value="' . htmlspecialchars($search) . '">';
+echo '  <input type="submit" value="search">';
+echo '</form>';
+
 #- 検索結果 -------
-$bind = array(":search" => "a%");
+$bind = array(":search" => "%$search%");
 $set->search = $db->select('tokyo_csv', 'name LIKE :search', $bind);
 
 #- Pager example of use -------
-$sql = "SELECT * FROM tokyo_csv WHERE 1 ORDER BY id DESC";
+$sql = "SELECT * FROM tokyo_csv WHERE 1 ";
+if (!empty($search)) {
+    $sql .= "AND (name LIKE :search OR code LIKE :search)";
+}
+
+$sql .= " ORDER BY code DESC";
+
 $pager = new Pager($mysqli, $sql, PAGER_LIMIT);
 //debug($pager);
 
@@ -33,7 +46,13 @@ $fields = array(
 
 #- Update -------
 $fields = array(
-	'name' => 'update name',
+	'name' => 'LName FName',
+);
+$db->update('tokyo_csv', $fields, 'id = 9');
+
+#- Update -------
+$fields = array(
+    'name' => 'update name',
 );
 $db->update('tokyo_csv', $fields, 'id = 9');
 
