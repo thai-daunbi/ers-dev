@@ -12,6 +12,7 @@ define('DATABASE',	'test_employee');
 #- pager
 $mysqli = new mysqli(HOSTNAME, USERNAME, PASSWORD, DATABASE);
 $mysqli->set_charset("utf8");
+mysqli_set_charset($mysqli, 'utf8mb4');
 
 #- db 
 $dsn = 'mysql:host='.HOSTNAME.';dbname='.DATABASE.';charset=utf8';
