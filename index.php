@@ -19,9 +19,10 @@ $search_results = [];
 
 if (!empty($search)) {
     $search = "%$search%";
-    $sql = "SELECT * FROM tokyo1_csv WHERE zipcode LIKE ?";
+    $sql = "SELECT * FROM tokyo_csv___13tokyo_csv WHERE zipcode LIKE ? OR City LIKE ? OR State LIKE ? OR `Street Address` LIKE ?";
     $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param("s", $search);
+    $search = mb_convert_encoding($search, "UTF-8", "UTF-8");
+    $stmt->bind_param("ssss", $search, $search, $search, $search);
     $stmt->execute();
     $result = $stmt->get_result();
     $search_results = $result->fetch_all(MYSQLI_ASSOC);
@@ -32,7 +33,7 @@ $set->search_results = $search_results;
 #----------------------------------------------------------------------
 
 
-$sql = "SELECT * FROM tokyo1_csv WHERE 1 ";
+$sql = "SELECT * FROM tokyo_csv___13tokyo_csv WHERE 1 ";
 if (!empty($search)) {
     $sql .= "AND (zipcode LIKE '$search')";
 }
@@ -41,7 +42,7 @@ $sql .= " ORDER BY code DESC";
 
 $pager = new Pager($mysqli, $sql, PAGER_LIMIT);
 
-$set->tokyo1_csv = $db->pager($pager);
+$set->tokyo_csv___13tokyo_csv = $db->pager($pager);
 
 # paging
 $set->pager = $pager->show();
@@ -56,13 +57,13 @@ $fields = array(
 $fields = array(
     'name' => 'LName FName',
 );
-$db->update('tokyo1_csv', $fields, 'id = 9');
+$db->update('tokyo_csv___13tokyo_csv', $fields, 'id = 9');
 
 #- Update -------
 $fields = array(
     'name' => 'update name',
 );
-$db->update('tokyo1_csv', $fields, 'id = 9');
+$db->update('tokyo_csv___13tokyo_csv', $fields, 'id = 9');
 
 #- View =============================================================
 view('index', $set);
