@@ -19,7 +19,7 @@ $search_results = [];
 
 if (!empty($search)) {
     $search = "%$search%";
-    $sql = "SELECT * FROM tokyo_csv___13tokyo_csv WHERE zipcode LIKE ? OR City LIKE ? OR State LIKE ? OR `Street Address` LIKE ?";
+    $sql = "SELECT * FROM tokyo_csv___13tokyo_csv WHERE zipcode LIKE ? OR City LIKE ? OR `State` LIKE ? OR `Street Address` LIKE ?";
     $stmt = $mysqli->prepare($sql);
     $search = mb_convert_encoding($search, "UTF-8", "UTF-8");
     $stmt->bind_param("ssss", $search, $search, $search, $search);
@@ -35,7 +35,7 @@ $set->search_results = $search_results;
 
 $sql = "SELECT * FROM tokyo_csv___13tokyo_csv WHERE 1 ";
 if (!empty($search)) {
-    $sql .= "AND (zipcode LIKE '$search')";
+    $sql .= "AND (zipcode LIKE '$search' OR City LIKE '$search' OR `State` LIKE '$search' OR `Street Address` LIKE '$search')";
 }
 $sql .= " ORDER BY code DESC";
 
