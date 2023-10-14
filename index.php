@@ -19,6 +19,28 @@ $search_results = [];
 
 if (!empty($search)) {
     $search = "%$search%";
+
+    $csvFilePath = '/path/to/your/KEN_ALL.csv';
+
+    if (file_exists($csvFilePath)) {
+        if (($handle = fopen($csvFilePath, "r")) !== FALSE) {
+            fgetcsv($handle, 1000, ",");
+            
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $combinedData = $data[6] . ' ' . $data[7]; 
+                if (stripos($combinedData, $search) !== false) {
+                    
+                    $search_results[] = $data;
+                }
+            }
+            fclose($handle);
+        }
+
+        // 나머지 코드는 변경하지 않고 사용 가능합니다.
+    } else {
+        echo "can't found CSV file";
+    }
+
     $sql = "SELECT * FROM ken_all WHERE zipcode LIKE ? OR City LIKE ? OR `State` LIKE ? OR `Street Address` LIKE ?";
     $stmt = $mysqli->prepare($sql);
     $search = mb_convert_encoding($search, "UTF-8", "UTF-8");
