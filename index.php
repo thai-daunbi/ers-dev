@@ -12,53 +12,38 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 echo '<form method="get" action="index.php" style="margin-bottom: 20px;">';
 echo '  <input type="text" id="search" name="search" value="' . htmlspecialchars($search) . '">';
 echo '  <input type="submit" name="submit_search" value="search">';
-echo '</form>';
+echo '</form';
 
 $search_condition = '';
 $search_results = [];
 
 if (!empty($search)) {
-    $search = "%$search%";
+    $search = "%" . str_replace(' ', '', $search) . "%";
+    $searchWithSpace = "%" . str_replace(' ', '', $search) . "%";
 
-    $csvFilePath = '/path/to/your/KEN_ALL.csv';
+    $sql = "SELECT * FROM ken_all WHERE (zipcode LIKE ? OR City LIKE ? OR `State` LIKE ? OR `Street Address` LIKE ? OR (City LIKE ? AND State LIKE ?))";
 
-    if (file_exists($csvFilePath)) {
-        if (($handle = fopen($csvFilePath, "r")) !== FALSE) {
-            fgetcsv($handle, 1000, ",");
-            
-            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                $combinedData = $data[6] . ' ' . $data[7]; 
-                if (stripos($combinedData, $search) !== false) {
-                    
-                    $search_results[] = $data;
-                }
-            }
-            fclose($handle);
-        }
-
-        // 나머지 코드는 변경하지 않고 사용 가능합니다.
-    } else {
-        echo "can't found CSV file";
-    }
-
-    $sql = "SELECT * FROM ken_all WHERE zipcode LIKE ? OR City LIKE ? OR `State` LIKE ? OR `Street Address` LIKE ?";
     $stmt = $mysqli->prepare($sql);
-    $search = mb_convert_encoding($search, "UTF-8", "UTF-8");
-    $stmt->bind_param("ssss", $search, $search, $search, $search);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $search_results = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
+    if ($stmt) {
+        $stmt->bind_param("ssssss", $search, $search, $search, $search, $search, $searchWithSpace);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $search_results = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+    } else {
+        echo "Query preparation failed: " . $mysqli->error;
+    }
 }
 
 $set->search_results = $search_results;
 #----------------------------------------------------------------------
 
-
 $sql = "SELECT * FROM ken_all WHERE 1 ";
+
 if (!empty($search)) {
-    $sql .= "AND (zipcode LIKE '$search' OR City LIKE '$search' OR `State` LIKE '$search' OR `Street Address` LIKE '$search')";
+    $sql .= "AND (zipcode LIKE '$search' OR City LIKE '$search' OR `State` LIKE '$search' OR `Street Address` LIKE '$search' OR CONCAT(City, `State`,`Street Address`) LIKE '$search' OR CONCAT(City, `State`) LIKE '$search' OR CONCAT(`State`,`Street Address`) LIKE '$search')";
 }
+
 $sql .= " ORDER BY code DESC";
 
 
