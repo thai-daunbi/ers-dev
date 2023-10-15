@@ -18,12 +18,17 @@ $search_condition = '';
 $search_results = [];
 
 if (!empty($search)) {
-    $search = "%" . str_replace(' ', '', $search) . "%";
-    $searchWithSpace = "%" . str_replace(' ', '', $search) . "%";
+    if(is_numeric($search)){
+        $search = str_replace(' ', '', $search) . "%";
+    } else {
+        $search = "%" . str_replace(' ', '', $search) . "%";
+    }
+    
 
     $sql = "SELECT * FROM ken_all WHERE (zipcode LIKE ? OR City LIKE ? OR `State` LIKE ? OR `Street Address` LIKE ? OR (City LIKE ? AND State LIKE ?))";
 
     $stmt = $mysqli->prepare($sql);
+
     if ($stmt) {
         $stmt->bind_param("ssssss", $search, $search, $search, $search, $search, $searchWithSpace);
         $stmt->execute();
