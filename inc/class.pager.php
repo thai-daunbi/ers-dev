@@ -72,12 +72,12 @@ class Pager extends db
   	//$getvar_val is a positive integer - > 0
   	function Set_Getvar_val()
   	{
-  		if (!empty($_GET[$this->getvar])) {
-  			$this->getvar_val = (int)$_GET[$this->getvar];
-  		}
-  		if ($this->getvar_val<1) {
-  			$this->getvar_val = 1;
-  		}
+		if (isset($_GET[$this->getvar])) { 
+            $this->getvar_val = (int)$_GET[$this->getvar];
+        }
+        if ($this->getvar_val < 1) {
+            $this->getvar_val = 1;
+        }
   	}
 
 	//Gets the start of the data

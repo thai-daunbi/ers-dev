@@ -4,17 +4,18 @@
 include_once(__DIR__.'/class.db.php');
 
 #- db info
-define('HOSENAME',	'localhost');
-define('USERNAME',	'test');
-define('PASSWORD',	'pass');
-define('DATABASE',	'test');
+define('HOSTNAME',	'localhost');
+define('USERNAME',	'root');
+define('PASSWORD',	'');
+define('DATABASE',	'test_employee');
 
-#- pager用
-$mysqli = new mysqli(HOSENAME, USERNAME, PASSWORD, DATABASE);
+#- pager
+$mysqli = new mysqli(HOSTNAME, USERNAME, PASSWORD, DATABASE);
 $mysqli->set_charset("utf8");
+mysqli_set_charset($mysqli, 'utf8mb4');
 
-#- db connect
-$dsn = 'mysql:host='.HOSENAME.';dbname='.DATABASE.';charset=utf8';
+#- db 
+$dsn = 'mysql:host='.HOSTNAME.';dbname='.DATABASE.';charset=utf8';
 try {
 	$db = new db($dsn, USERNAME, PASSWORD);
 } catch (PDOException $e) {
@@ -22,7 +23,7 @@ try {
 	die();
 }
 
-#- debug
+#- Debug
 function debug($value)
 {
 	if (empty($value)) {
@@ -38,6 +39,7 @@ function debug($value)
 	}
 	return true;
 }
+
 function dump($value)
 {
 	if (empty($value)) {
@@ -53,6 +55,7 @@ function dump($value)
 	}
 	return true;
 }
+
 function error($value, $msg=null)
 {
 	if (empty($value)) {
@@ -71,3 +74,71 @@ function error($value, $msg=null)
 	}
 	return true;
 }
+
+$flagFile = __DIR__ . '/data_added_flag.txt';
+
+
+if (!file_exists($flagFile)) {
+    try {
+		$conn = new PDO("mysql:host=".HOSTNAME.";dbname=".DATABASE, USERNAME, PASSWORD);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		for ($i = 0; $i < 100; $i++) {
+			$departmentName = "Department " . ($i + 1);
+
+			$sql = "INSERT INTO department (department_name) VALUES (:departmentName)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':departmentName', $departmentName);
+			$stmt->execute();
+		}
+
+		for ($i = 0; $i < 100; $i++) {
+			$todofukenName = "Todofuken " . ($i + 1);
+
+			$sql = "INSERT INTO todofuken (todofuken_name) VALUES (:todofukenName)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':todofukenName', $todofukenName);
+			$stmt->execute();
+		}
+
+		for ($i = 0; $i < 100; $i++) {
+			$name = "User " . ($i + 1);
+			$departmentId = rand(1, 10); 
+			$gender = ($i % 2 == 0) ? "Male" : "Female";
+			$age = rand(20, 60); 
+			$email = "user" . ($i + 1) . "@example.com";
+			$zipcode = sprintf("%05d", rand(10000, 99999));
+			$todofukenId = rand(1, 5); 
+			$address = "Address " . ($i + 1);
+
+			$sql = "INSERT INTO employee (name, department_id, gender, age, email, postal_code, todofuken_id, other_address) 
+					VALUES (:name, :departmentId, :gender, :age, :email, :zipcode, :todofukenId, :address)";
+			
+			$stmt = $conn->prepare($sql);
+			$stmt->bindParam(':name', $name);
+			$stmt->bindParam(':departmentId', $departmentId);
+			$stmt->bindParam(':gender', $gender);
+			$stmt->bindParam(':age', $age);
+			$stmt->bindParam(':email', $email);
+			$stmt->bindParam(':zipcode', $zipcode);
+			$stmt->bindParam(':todofukenId', $todofukenId);
+			$stmt->bindParam(':address', $address);
+			
+			$stmt->execute();
+		}
+
+        file_put_contents($flagFile, 'Data added');
+        
+        echo "100 records have been successfully added to department, todofuken, and employee tables.";
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+} else {
+    echo "Data has already been added.";
+}
+
+
+$conn = null;
+?>
